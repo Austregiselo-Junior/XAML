@@ -1,0 +1,66 @@
+﻿Otimize seu layout XAML
+
+1 - Reduzir a estrutura do layout - ver exemplo
+	Simplificação da estrutura hierárquica, reduzir o número de elementos não produtores de pixels aumenta o desempenho.
+	Em vez de vários paineis aninhados, usar um único painel.
+	Se a UI tiver um itemsContrl (ListView) que é usado várias vezes, se otimizar ele a melhoria é multiplicada porque esses componentes têm uma subárvore que é instânciada toda vez.
+
+	Veja o exemplo no código em ReduzirEstruturaLayout.xaml, segundo a documentação todos os tipos de
+	paineis (Grid, StackPanel e RelativePanel) oferecem desempenho semelhante mas o importante é reduzir a
+	quantidade deles.
+
+
+2 - Se falando de sobreposição de elementos o Grid é otimizado para isso mas tem que ser de célula única
+	Exemplo:
+	<Grid>
+		<Ellipse Fill="Red" Width="200" Height="200" />
+		<TextBlock Text="Test" 
+               HorizontalAlignment="Center" 
+               VerticalAlignment="Center" />
+	</Grid>
+
+3 - Evitar sempre adicionar um elemento Border adicional, use sempre borda integrada.
+	Exemplo de como deve ser feito:
+
+	<RelativePanel 
+		BorderBrush="Red" B
+		orderThickness="2" 
+		CornerRadius="10" 
+		Padding="12">
+		 <TextBox x:Name="textBox1" RelativePanel.AlignLeftWithPanel="True"/>
+		 <Button Content="Submit" RelativePanel.Below="textBox1"/>
+	</RelativePanel>
+
+4 - Para redimensionamento de layout, é mais recomendado o uso do SizeChanged, use o LayoutUpdate somente 
+  se o elemento for reposicionado sem alterar o seu tamanho.
+
+Fonte: https://learn.microsoft.com/en-us/windows/uwp/debug-test-perf/optimize-your-xaml-layout
+
+
+Otimize sua marcação XAML
+5 - Na inicialização do aplicativo, deve conter os dicionaios e páginas e recursos que você precisa para sua IU inicial.
+
+6 - Adiar criação de item.
+	Se em uma página algum componente não é naturalmente mostrado ao usuário, podemos adiar o carregamento 
+	desse componente, podemos fazer isso com o x:loaded, par ítens simples não é bom poeque o x:loaded tem
+	um custo de memória, mas pra uma lista que tem imagens, é interessante.
+
+7 - Recursos com x:Name
+	Evitar o usu desnecessário.
+
+8 - ResourceDictionary e UserControl
+	Se o UserControl for muito usado é tiver um ResourceDictionary dentro dele isso não é bom 
+	porque a cada instância desse UserControl a plataforma cria copias do ResourceDictionary. Assim 
+	a dica nesses casos é subir o ResourceDictionary de nível
+
+9 - Escopo de Resource e ResourceDictionary
+	Se temos 3 páginas que são abertas em sequência os ResourceDictionary das 3 não devem ficar no
+	app.xaml, porque na inicialização do aplicativo os 3 ResourceDictionary serão carregados.
+
+	O certo é que os ResourceDictionary das páginas 2 e 3 estejam nas próprias páginas, isso vai melhorar 
+	o tempo da inicialização  do aplicativo.
+
+10 - Reutilizar cores
+	Por cores comuns no dicioário de recursos.
+
+	Fonte: https://learn.microsoft.com/en-us/windows/uwp/debug-test-perf/optimize-xaml-loading
